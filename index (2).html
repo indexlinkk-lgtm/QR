@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>QR Studio - QR Generator</title>
+
+<script src="https://unpkg.com/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f5;
+    color: #111;
+    min-height: 100vh;
+    padding: 30px 15px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+}
+
+.logo span {
+    color: #00a86b;
+}
+
+.header p {
+    color: #888;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    align-items: start;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 5px 25px rgba(0,0,0,.04);
+}
+
+h3 {
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.field {
+    margin-bottom: 19px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 9px;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #e5e5e5;
+    border-radius: 9px;
+    background: #fff;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: #00a86b;
+}
+
+.color-row {
+    display: flex;
+    gap: 15px;
+}
+
+.color-box {
+    flex: 1;
+}
+
+input[type="color"] {
+    height: 43px;
+    padding: 4px;
+    cursor: pointer;
+}
+
+input[type="range"] {
+    accent-color: #00a86b;
+    padding: 0;
+}
+
+.size-info {
+    font-size: 12px;
+    color: #888;
+    margin-top: 7px;
+}
+
+.generate {
+    width: 100%;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    background: #00a86b;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.generate:hover {
+    background: #008b58;
+}
+
+.preview {
+    text-align: center;
+    position: sticky;
+    top: 20px;
+}
+
+.qr-frame {
+    width: 210px;
+    height: 210px;
+    margin: 10px auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8f9f8;
+    border-radius: 15px;
+    padding: 12px;
+    overflow: hidden;
+}
+
+.qr-frame canvas,
+.qr-frame svg {
+    width: 180px !important;
+    height: 180px !important;
+    max-width: 100%;
+}
+
+.placeholder {
+    color: #aaa;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.download {
+    width: 100%;
+    padding: 14px;
+    background: #111;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: none;
+}
+
+.download:hover {
+    background: #333;
+}
+
+.hint {
+    font-size: 12px;
+    color: #999;
+    margin-top: 15px;
+    line-height: 1.5;
+}
+
+.footer {
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 30px;
+}
+
+@media(max-width: 700px) {
+    .main {
+        grid-template-columns: 1fr;
+    }
+
+    .preview {
+        position: static;
+    }
+
+    .container {
+        max-width: 450px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <div class="logo">QR<span>STUDIO.</span></div>
+        <p>Create beautiful QR codes instantly.</p>
+    </header>
+
+    <div class="main">
+
+        <!-- SETTINGS -->
+
+        <section class="card">
+
+            <h3>QR Code Settings</h3>
+
+            <div class="field">
+                <label>Website URL</label>
+                <input
+                    type="text"
+                    id="url"
+                    placeholder="https://example.com"
+                >
+            </div>
+
+            <div class="field">
+                <label>QR Design Style</label>
+                <select id="style">
+                    <option value="rounded">Rounded</option>
+                    <option value="dots">Dots</option>
+                    <option value="classy">Classy</option>
+                    <option value="classy-rounded">Classy Rounded</option>
+                    <option value="square">Square</option>
+                    <option value="extra-rounded">Extra Rounded</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>QR Colors</label>
+
+                <div class="color-row">
+                    <div class="color-box">
+                        <label>QR Color</label>
+                        <input type="color" id="qrColor" value="#080808">
+                    </div>
+
+                    <div class="color-box">
+                        <label>Background</label>
+                        <input type="color" id="bgColor" value="#ffffff">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>QR Size</label>
+                <input
+                    type="range"
+                    id="size"
+                    min="300"
+                    max="1000"
+                    step="100"
+                    value="600"
+                >
+                <div class="size-info">
+                    Export resolution: <span id="sizeValue">600 × 600</span> px
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Upload Center Logo (Optional)</label>
+                <input
+                    type="file"
+                    id="logo"
+                    accept="image/png,image/jpeg,image/webp"
+                >
+                <div class="size-info">
+                    PNG with transparent background recommended.
+                </div>
+            </div>
+
+            <button class="generate" onclick="generateQR()">
+                Generate QR Code →
+            </button>
+
+        </section>
+
+        <!-- PREVIEW -->
+
+        <section class="card preview">
+
+            <h3>Your QR Code</h3>
+
+            <div class="qr-frame">
+                <div id="qr">
+                    <div class="placeholder">
+                        Your QR code<br>
+                        will appear here
+                    </div>
+                </div>
+            </div>
+
+            <button class="download" id="download" onclick="downloadQR()">
+                ↓ Download PNG
+            </button>
+
+            <p class="hint">
+                High-quality QR code.<br>
+                Scan with any smartphone camera.
+            </p>
+
+        </section>
+
+    </div>
+
+    <footer class="footer">
+        QR STUDIO · Simple. Unique. Free.
+    </footer>
+
+</div>
+
+<script>
+
+let qrCode = null;
+
+const urlInput = document.getElementById("url");
+const qrArea = document.getElementById("qr");
+const downloadBtn = document.getElementById("download");
+const sizeInput = document.getElementById("size");
+
+sizeInput.addEventListener("input", function() {
+    document.getElementById("sizeValue").textContent =
+        this.value + " × " + this.value;
+});
+
+function readLogo(file) {
+    return new Promise((resolve, reject) => {
+
+        if (!file) {
+            resolve("");
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+
+        reader.readAsDataURL(file);
+    });
+}
+
+async function generateQR() {
+
+    let url = urlInput.value.trim();
+
+    if (!url) {
+        alert("Please enter your website URL!");
+        return;
+    }
+
+    if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(url)) {
+        url = "https://" + url;
+    }
+
+    try {
+        const parsed = new URL(url);
+
+        if (!["https:", "http:"].includes(parsed.protocol)) {
+            throw new Error("Invalid URL");
+        }
+
+    } catch {
+        alert("Please enter a valid website URL!");
+        return;
+    }
+
+    const button = document.querySelector(".generate");
+
+    button.textContent = "Generating...";
+    button.disabled = true;
+
+    try {
+
+        const logoFile = document.getElementById("logo").files[0];
+        const logoData = await readLogo(logoFile);
+
+        const size = Number(sizeInput.value);
+
+        const qrStyle = document.getElementById("style").value;
+        const qrColor = document.getElementById("qrColor").value;
+        const bgColor = document.getElementById("bgColor").value;
+
+        const options = {
+
+            width: size,
+            height: size,
+
+            type: "canvas",
+
+            data: url,
+
+            margin: 20,
+
+            qrOptions: {
+                errorCorrectionLevel: "H"
+            },
+
+            dotsOptions: {
+                color: qrColor,
+                type: qrStyle
+            },
+
+            backgroundOptions: {
+                color: bgColor
+            },
+
+            cornersSquareOptions: {
+                color: qrColor,
+                type: "extra-rounded"
+            },
+
+            cornersDotOptions: {
+                color: qrColor,
+                type: "dot"
+            },
+
+            image: logoData || undefined,
+
+            imageOptions: {
+                hideBackgroundDots: true,
+                imageSize: 0.22,
+                margin: 7,
+                crossOrigin: "anonymous"
+            }
+
+        };
+
+        qrArea.innerHTML = "";
+
+        qrCode = new QRCodeStyling(options);
+
+        qrCode.append(qrArea);
+
+        downloadBtn.style.display = "block";
+
+    } catch (error) {
+
+        console.error(error);
+        alert("QR generation failed. Please try again.");
+
+    } finally {
+
+        button.textContent = "Generate QR Code →";
+        button.disabled = false;
+
+    }
+}
+
+function downloadQR() {
+
+    if (!qrCode) {
+        alert("Generate a QR code first!");
+        return;
+    }
+
+    qrCode.download({
+        name: "qr-studio-code",
+        extension: "png"
+    });
+
+}
+
+urlInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        generateQR();
+    }
+});
+
+</script>
+
+</body>
+</html>
